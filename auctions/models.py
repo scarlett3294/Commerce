@@ -10,7 +10,7 @@ class Category(models.Model):
     name = models.CharField(max_length=60)
 
     def __str__(self):
-        return self.namecle
+        return self.name
 
 class Auction(models.Model):
     title = models.CharField(max_length=60)
@@ -19,7 +19,6 @@ class Auction(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
     date_created = models.DateTimeField(auto_now_add=True)
-    nr_bids = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     starting_bid = models.DecimalField(max_digits=10, decimal_places=2)
 
