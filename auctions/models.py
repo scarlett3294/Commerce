@@ -6,14 +6,14 @@ from django.db import models
 class User(AbstractUser):
     pass
 
-class Category():
+class Category(models.Model):
     name = models.CharField(max_length=60)
 
     def __str__(self):
-        return self.name
+        return self.namecle
 
 class Auction(models.Model):
-    title = models.charField(max_lenght=64)
+    title = models.CharField(max_length=60)
     description = models.TextField()
     image = models.URLField(blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
