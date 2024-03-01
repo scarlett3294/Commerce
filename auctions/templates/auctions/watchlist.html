@@ -1,0 +1,28 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <section class="watchlist">
+                    <h2 class="watchlist__title">My Watchlist</h2>
+
+                    {% if watchlist %}
+                        <ul class="list-group watchlist__list">
+                            {% for item in watchlist %}
+                                <li class="list-group-item watchlist__item">
+                                    <a href="{% url 'listing' item.listing.pk %}" class="text-dark">{{ item.listing.title }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="watchlist__empty-msg">Your watchlist is empty</p>
+                    {% endif %}
+                </section>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+

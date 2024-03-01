@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="my-auctions">
+                    <h2 class="my-auctions__title">My Auctions</h2>
+                    {% if user_auctions %}
+                        <ul class="list-group my-auctions__list">
+                            {% for auction in user_auctions %}
+                                <li class="list-group-item my-auctions__item">
+                                    <a href="{% url 'listing' auction.pk %}" class="text-dark">{{ auction.title }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="my-auctions__empty-msg">You have no auctions. 
+                            <a href="{% url 'create' %}" class="my-auctions__create-link">Create one now</a>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

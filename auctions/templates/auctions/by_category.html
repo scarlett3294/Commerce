@@ -3,9 +3,9 @@
 {% block body %}
     <section class="active-listings">
         <div class="container">
-            <h2 class="mt-4 mb-4">Active Listings</h2>
+            <h2 class="mt-4 mb-4">Active Listings from {{ category }}</h2>
             <div class="row">
-                {% for listing in active_listings %}
+                {% for listing in listings %}
                     <div class="col-lg-4 mb-4">
                         <div class="card">
                             {% if listing.image %}

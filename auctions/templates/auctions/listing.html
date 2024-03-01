@@ -1,0 +1,93 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ listing.title }}</h2>
+
+                        <!-- Display Messages -->
+                        {% if messages %}
+                            <div class="alert alert-info" role="alert">
+                                <ul>
+                                    {% for message in messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        <!-- Listing Details -->
+                        <div class="listing-details">
+                            {% if listing.image %}
+                                <img src="{{ listing.image }}" alt="Listing Image" class="img-fluid mb-3">
+                            {% endif %}
+                            <p class="card-text">Description: {{ listing.description }}</p>
+                            <p class="card-text">Price: ${{ listing.price }}</p>
+                            <!-- Add more details as needed -->
+
+                            <!-- Bid Form -->
+                            {% if user.is_authenticated and listing.active and listing.creator != user %}
+                                <form method="POST" class="mb-3">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <input type="number" name="bid_amount" id="bid_amount" class="form-control" placeholder="Your bid" min="{{ listing.starting_bid }}" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Place Bid</button>
+                                </form>
+                            {% elif not user.is_authenticated %}
+                                <p>To place your bid, <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">register</a>.</p>
+                            {% endif %}
+
+                            <!-- Bid Information -->
+                            {% if total_bids %}
+                                <p class="card-text">Highest bid is ${{ highest_bid.bid_amount }}. Total bids: {{ total_bids }}</p>
+                            {% else %}
+                                <p class="card-text">No bids placed on this listing.</p>
+                            {% endif %}
+
+                            <!-- Close Auction Button (for Listing Creator) -->
+                            {% if user.is_authenticated and listing.creator == user and listing.active %}
+                                <form method="POST" action="{% url 'close_auction' listing_id=listing.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Close Auction</button>
+                                </form>
+                            {% endif %}
+
+                            <!-- Winner Message -->
+                            {% if user.is_authenticated and not listing.active and listing.winner_id == user.id %}
+                                <p class="card-text">You have won the auction!</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="comments-section mt-4">
+                    <h3>Comments</h3>
+                    {% if user.is_authenticated %}
+                        <!-- Comment Form -->
+                        <form method="post" action="{% url 'add_comment' listing_id=listing.id %}" class="mb-3">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <textarea name="content" rows="4" class="form-control" placeholder="Add your comment"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    {% endif %}
+
+                    <!-- Display Comments -->
+                    <ul class="list-unstyled">
+                        {% for comment in comments %}
+                            <li class="mb-3">
+                                <p class="mb-0"><strong>{{ comment.commenter }} ({{ comment.date_created }})</strong>: {{ comment.content }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <section class="won-auctions">
+                    <h2 class="won-auctions__title">Won Auctions</h2>
+                    {% if won_auctions %}
+                        <ul class="list-group won-auctions__list">
+                            {% for auction in won_auctions %}
+                                <li class="list-group-item won-auctions__item">
+                                    <a href="{% url 'listing' auction.pk %}" class="text-dark">{{ auction.title }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="won-auctions__empty-msg">No auctions won. Place a bid now for <a href="{% url 'index' %}" class="won-auctions__link">active listings</a>.</p>
+                    {% endif %}
+                </section>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
