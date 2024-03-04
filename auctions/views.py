@@ -24,8 +24,15 @@ def listing_view(request, listing_id):
     except Auction.DoesNotExist:
         raise Http404("Listing does not exist")
     
+    #Get the highest bid for the listing
     highest_bid = Bid.objects.filter(listing=listing).order_by("-bid_amount").first()
+    #Calculate total number of bids
     total_bids = Bid.objects.filter(listing=listing).count()
+
+    #Get the last bid of the user
+    user_bid = None
+    if request.user.is_authenticated:
+        user_bid = Bid.objects.filter(listing=listing, bidder=request.user).order_by("-date_created").first()
 
     if request.method == "POST":
         if request.user.is_authenticated:
@@ -34,7 +41,13 @@ def listing_view(request, listing_id):
                 try:
                     bid_amount = float(bid_amount)
                     if highest_bid is None or bid_amount > highest_bid.bid_amount:
+
+                        #Create a new bid
                         bid = Bid.objects.create(listing=listing, bidder=request.user, bid_amount=bid_amount)
+                        #Update the price of the auction
+                        listing.price = bid_amount
+                        listing.save()
+
                         messages.success(request, "Bid placed successfully!")
                     else:
                         messages.error(request, "Bid amount must be higher than the current highest bid.")
@@ -60,7 +73,8 @@ def listing_view(request, listing_id):
         "highest_bid": highest_bid,
         "total_bids": total_bids,
         "is_in_watchlist": is_in_watchlist,
-        "comments": comments
+        "comments": comments,
+        "user_bid": user_bid
     })
 
 #Renders the page with auctions created by the current user.

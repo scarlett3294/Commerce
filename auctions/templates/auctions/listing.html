@@ -19,14 +19,42 @@
                             </div>
                         {% endif %}
 
+                        <!-- Watchlist -->
+                        {% if user.is_authenticated %}
+                            <form method="POST" action="{% if is_in_watchlist %}
+                                                            {% url 'remove_from_watchlist' listing_id=listing.pk %}
+                                                        {% else %}
+                                                            {% url 'add_to_watchlist' listing_id=listing.pk %}
+                                                        {% endif %}" class="mt-3">
+                                {% csrf_token %}
+                                {% if is_in_watchlist %}
+                                    <button type="submit" name="action" value="remove" class="btn btn-danger">Remove from Watchlist</button>
+                                {% else %}
+                                     <button type="submit" name="action" value="add" class="btn btn-primary">Add to Watchlist</button>
+                                {% endif %}
+                            </form>
+                        {% endif %}
+
+                        <p></p>
                         <!-- Listing Details -->
                         <div class="listing-details">
                             {% if listing.image %}
                                 <img src="{{ listing.image }}" alt="Listing Image" class="img-fluid mb-3">
                             {% endif %}
                             <p class="card-text">Description: {{ listing.description }}</p>
-                            <p class="card-text">Price: ${{ listing.price }}</p>
-                            <!-- Add more details as needed -->
+                            <p class="card-text"><strong>Original Price: ${{ listing.starting_bid }}</strong></p>
+                            <p class="card-text">Listed by: {{ listing.creator }} on {{listing.date_created}}</p>
+                            <p class="card-text">Category: {{ listing.category }}</p>
+                            <p class="card-text"><strong>Auction Status: 
+                                {% if listing.active == True %}
+                                    Active.
+                                {% else %}
+                                    Closed.
+                                {% endif %}
+                            </strong></p>
+                            {% if user_bid %}
+                                <p>Your last bid: ${{ user_bid.bid_amount }}</p>
+                            {% endif %}
 
                             <!-- Bid Form -->
                             {% if user.is_authenticated and listing.active and listing.creator != user %}
@@ -35,6 +63,7 @@
                                     <div class="form-group">
                                         <input type="number" name="bid_amount" id="bid_amount" class="form-control" placeholder="Your bid" min="{{ listing.starting_bid }}" required>
                                     </div>
+                                    <p></p>
                                     <button type="submit" class="btn btn-primary">Place Bid</button>
                                 </form>
                             {% elif not user.is_authenticated %}
@@ -43,9 +72,9 @@
 
                             <!-- Bid Information -->
                             {% if total_bids %}
-                                <p class="card-text">Highest bid is ${{ highest_bid.bid_amount }}. Total bids: {{ total_bids }}</p>
+                                <p class="card-text"><strong>Highest bid is ${{ highest_bid.bid_amount }}. Total bids: {{ total_bids }}</strong></p>
                             {% else %}
-                                <p class="card-text">No bids placed on this listing.</p>
+                                <p class="card-text"><strong>No bids placed on this listing.</strong></p>
                             {% endif %}
 
                             <!-- Close Auction Button (for Listing Creator) -->
@@ -74,6 +103,7 @@
                             <div class="form-group">
                                 <textarea name="content" rows="4" class="form-control" placeholder="Add your comment"></textarea>
                             </div>
+                            <p></p>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     {% endif %}
